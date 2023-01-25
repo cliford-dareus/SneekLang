@@ -30,8 +30,7 @@ document.querySelector<HTMLDivElement>("#app")!.innerHTML = `
           </div>
 
           <img src=${globe} alt="" class="globle"/>
-          <div class="globe__style"></div>
-
+          
           <div class="lang__selector lang__from">
             <label class="">To</label>
             <select class="select__style">
@@ -44,6 +43,7 @@ document.querySelector<HTMLDivElement>("#app")!.innerHTML = `
 
         <section class="section entry__section">
           <div class="input__container"><div class="blob"></div></div>
+          <div class="form__container">
             <h3 class="form__title">Enter text to Translate</h3>
             <form id="form" class="form">
               <div class="flex lang__input">
@@ -51,6 +51,7 @@ document.querySelector<HTMLDivElement>("#app")!.innerHTML = `
               </div>
               <button class="form__btn">Translate</button>
             </form>
+          </div>
         </section>
     </main>
 
@@ -71,7 +72,7 @@ const languagecode: { [index: string]: string } = {
 };
 
 const hero = document.querySelector<HTMLDivElement>(".hero__section");
-const formBtn = document.querySelector<HTMLButtonElement>(".form__btn");
+// const formBtn = document.querySelector<HTMLButtonElement>(".form__btn");
 const to = document.querySelector<HTMLSelectElement>("#to");
 const dataView = document.querySelector<HTMLDivElement>("#data");
 // const from = document.querySelector<HTMLSelectElement>("#from");
@@ -84,22 +85,22 @@ text?.addEventListener("keyup", getText);
 
 function getText(e: any) {
   textToTranslate = e.target.value;
-}
+};
 
 async function submitTextTranslate(e: Event) {
   e.preventDefault();
   getData(textToTranslate, translateTo);
   form!.reset();
-}
+};
 
 async function getData(textToTranslate: string, to: string) {
   if (!textToTranslate) {
     throw new Error("Add text to translate...");
-  }
+  };
 
   if (!to) {
     throw new Error("Add text to translate...");
-  }
+  };
 
   const textData = await translateText(textToTranslate, to);
   const text = textData[0]?.translations[0]?.text;
@@ -110,13 +111,12 @@ async function getData(textToTranslate: string, to: string) {
 
   const closeBtn = document.querySelector(".result__close-btn");
   closeBtn?.addEventListener("click", () => reset(dataView));
-}
+};
 
 function reset(view: any) {
   view.innerHTML = "";
   hero?.classList.remove("hero__squiz");
-  formBtn?.classList.remove("form__btn-open");
-}
+};
 
 function render(text: string, data: any) {
   dataView!.innerHTML = `
@@ -126,21 +126,20 @@ function render(text: string, data: any) {
 
       <audio
         class="audio__player"
-        controls
+        // controls
         src=${data}>
     </audio>
   </div>`;
 
   hero?.classList.add("hero__squiz");
-  formBtn?.classList.add("form__btn-open");
-}
+};
 
 function getTargetLang(lang: string): string {
-  let language = ''
-  for(let key in languagecode){
-    if(key === lang){
-      language = languagecode[key]
+  let language = "";
+  for (let key in languagecode) {
+    if (key === lang) {
+      language = languagecode[key];
     }
   }
-  return language
-}
+  return language;
+};
