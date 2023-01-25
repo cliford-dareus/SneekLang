@@ -1,14 +1,10 @@
 import "./style.css";
 import globe from "/globe.png";
-import { translateText } from "./api";
+import { readText, translateText } from "./api";
 
 document.querySelector<HTMLDivElement>("#app")!.innerHTML = `
   <div class="App">
-    <div class="blob">
-       <svg xmlns:xlink="http://www.w3.org/1999/xlink" version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 310 350">
-        <path d="M156.4,339.5c31.8-2.5,59.4-26.8,80.2-48.5c28.3-29.5,40.5-47,56.1-85.1c14-34.3,20.7-75.6,2.3-111  c-18.1-34.8-55.7-58-90.4-72.3c-11.7-4.8-24.1-8.8-36.8-11.5l-0.9-0.9l-0.6,0.6c-27.7-5.8-56.6-6-82.4,3c-38.8,13.6-64,48.8-66.8,90.3c-3,43.9,17.8,88.3,33.7,128.8c5.3,13.5,10.4,27.1,14.9,40.9C77.5,309.9,111,343,156.4,339.5z"/>
-      </svg>
-    </div>
+    
     <header class="header">
         <a href="" class="logo">SNEEK<span class="accent">Lang</span></a>
         <ul class="nav__menu">
@@ -27,12 +23,14 @@ document.querySelector<HTMLDivElement>("#app")!.innerHTML = `
           <div class="lang__selector lang__to">
             <label class="">To</label>
             <select id="to" class="select__style">
-              <option value="english">English</option>
-              <option value="english">English</option>
+              <option value="en">English</option>
+              <option value="fr">French</option>
+              <option value="de">Germain</option>
             </select>
           </div>
 
           <img src=${globe} alt="" class="globle"/>
+          <div class="globe__style"></div>
 
           <div class="lang__selector lang__from">
             <label class="">To</label>
@@ -45,16 +43,14 @@ document.querySelector<HTMLDivElement>("#app")!.innerHTML = `
         <div class="result" id="data"></div>
 
         <section class="section entry__section">
-          <div class="input__container">
-            <form id="form">
+          <div class="input__container"><div class="blob"></div></div>
+            <h3 class="form__title">Enter text to Translate</h3>
+            <form id="form" class="form">
               <div class="flex lang__input">
-                <label>Enter text to Translate</label>
-                <input name="text" type="text" placeholder="Text here"/>
+                <input name="text" id="text" type="text" placeholder="Text here"/>
               </div>
-              <button>Translate</button>
+              <button class="form__btn">Translate</button>
             </form>
-          </div>
-          
         </section>
     </main>
 
@@ -66,26 +62,82 @@ document.querySelector<HTMLDivElement>("#app")!.innerHTML = `
 
 let translateTo = "";
 let translateFrom = "";
+let textToTranslate = ''
 
+const languagecode = {
+  'fr': 'fr-fr',
+  'en': 'en-us',
+  'de': 'de-de'
+};
+
+const hero = document.querySelector(".hero__section");
+const formBtn = document.querySelector(".form__btn");
 const to = document.querySelector<Element>("#to");
 const dataView = document.querySelector<Element>("#data");
 const from = document.querySelector<Element>("#from");
-const form = document.querySelector<Element>("#form");
+const form = document.querySelector<HTMLFormElement>("#form");
+const text = document.querySelector("#text");
 
-to?.addEventListener("change", getData);
+to?.addEventListener("change", (e: any) => translateTo = e.target.value);
 form?.addEventListener("submit", submitTextTranslate);
+text?.addEventListener("keyup", getText);
 
-async function getData() {
-  const data = await translateText();
-  const text = data[0].translations[0].text;
-  dataView!.innerHTML = `
-  <div class="">
-      ${text}
-  </div>`;
-}
+
+function getText(e: any){
+  textToTranslate = e.target.value
+};
 
 async function submitTextTranslate(e: Event) {
   e.preventDefault();
+  getData(textToTranslate, translateTo);
+  form!.reset()
+};
 
-  console.log(form?.querySelector('input[name="text"]'));
+async function getData(textToTranslate: string, to: string) {
+  if (!textToTranslate){ 
+    throw new Error('Add text to translate...');
+  };
+
+  if(!to){
+    throw new Error("Add text to translate...");
+  };
+
+  const textData = await translateText(textToTranslate, to);
+  const text = textData[0]?.translations[0]?.text;
+  const lang = <string>textData[0]?.translations[0]?.to;
+  const targetLanguage = getTargetLang(lang)
+  const speechData = await readText(text, targetLanguage);
+  render(text, speechData);
+
+  const closeBtn = document.querySelector(".result__close-btn");
+  closeBtn?.addEventListener("click", ()=>reset(dataView));
+};
+
+function reset(view: any){
+  view.innerHTML='';
+  hero?.classList.remove("hero__squiz");
+  formBtn?.classList.remove("form__btn-open");
+};
+
+function render(text: string, data: any){
+  dataView!.innerHTML = `
+  <div class="result__container">
+      <button class="result__close-btn">X</button>
+      ${text}
+
+      <audio
+        controls
+        src=${data}>
+    </audio>
+  </div>`;
+
+  hero?.classList.add("hero__squiz");
+  formBtn?.classList.add("form__btn-open");
 }
+
+function getTargetLang(lang: string) {
+  if(!lang) return
+  return languagecode[lang];
+}
+
+
