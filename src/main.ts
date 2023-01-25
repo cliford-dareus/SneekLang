@@ -18,12 +18,12 @@ document.querySelector<HTMLDivElement>("#app")!.innerHTML = `
         <div class="nav__toggle"></div>
     </header>
 
-    <main class>
+    <main class="">
         <section class="section hero__section">
           <div class="lang__selector lang__to">
             <label class="">To</label>
             <select id="to" class="select__style">
-              <option value="en">English</option>
+              <option value="en" selected>English</option>
               <option value="fr">French</option>
               <option value="de">Germain</option>
             </select>
@@ -61,71 +61,71 @@ document.querySelector<HTMLDivElement>("#app")!.innerHTML = `
 `;
 
 let translateTo = "";
-let translateFrom = "";
-let textToTranslate = ''
+// let translateFrom = "";
+let textToTranslate = "";
 
-const languagecode = {
-  'fr': 'fr-fr',
-  'en': 'en-us',
-  'de': 'de-de'
+const languagecode: { [index: string]: string } = {
+  fr: "fr-fr",
+  en: "en-us",
+  de: "de-de",
 };
 
-const hero = document.querySelector(".hero__section");
-const formBtn = document.querySelector(".form__btn");
-const to = document.querySelector<Element>("#to");
-const dataView = document.querySelector<Element>("#data");
-const from = document.querySelector<Element>("#from");
+const hero = document.querySelector<HTMLDivElement>(".hero__section");
+const formBtn = document.querySelector<HTMLButtonElement>(".form__btn");
+const to = document.querySelector<HTMLSelectElement>("#to");
+const dataView = document.querySelector<HTMLDivElement>("#data");
+// const from = document.querySelector<HTMLSelectElement>("#from");
 const form = document.querySelector<HTMLFormElement>("#form");
 const text = document.querySelector("#text");
 
-to?.addEventListener("change", (e: any) => translateTo = e.target.value);
+to?.addEventListener("change", (ev: any) => (translateTo = ev.target!.value));
 form?.addEventListener("submit", submitTextTranslate);
 text?.addEventListener("keyup", getText);
 
-
-function getText(e: any){
-  textToTranslate = e.target.value
-};
+function getText(e: any) {
+  textToTranslate = e.target.value;
+}
 
 async function submitTextTranslate(e: Event) {
   e.preventDefault();
   getData(textToTranslate, translateTo);
-  form!.reset()
-};
+  form!.reset();
+}
 
 async function getData(textToTranslate: string, to: string) {
-  if (!textToTranslate){ 
-    throw new Error('Add text to translate...');
-  };
-
-  if(!to){
+  if (!textToTranslate) {
     throw new Error("Add text to translate...");
-  };
+  }
+
+  if (!to) {
+    throw new Error("Add text to translate...");
+  }
 
   const textData = await translateText(textToTranslate, to);
   const text = textData[0]?.translations[0]?.text;
   const lang = <string>textData[0]?.translations[0]?.to;
-  const targetLanguage = getTargetLang(lang)
-  const speechData = await readText(text, targetLanguage);
+  const targetLanguage = getTargetLang(lang);
+  const speechData = await readText(text, targetLanguage!);
   render(text, speechData);
 
   const closeBtn = document.querySelector(".result__close-btn");
-  closeBtn?.addEventListener("click", ()=>reset(dataView));
-};
+  closeBtn?.addEventListener("click", () => reset(dataView));
+}
 
-function reset(view: any){
-  view.innerHTML='';
+function reset(view: any) {
+  view.innerHTML = "";
   hero?.classList.remove("hero__squiz");
   formBtn?.classList.remove("form__btn-open");
-};
+}
 
-function render(text: string, data: any){
+function render(text: string, data: any) {
   dataView!.innerHTML = `
   <div class="result__container">
       <button class="result__close-btn">X</button>
       ${text}
 
       <audio
+        class="audio__player"
         controls
         src=${data}>
     </audio>
@@ -135,9 +135,12 @@ function render(text: string, data: any){
   formBtn?.classList.add("form__btn-open");
 }
 
-function getTargetLang(lang: string) {
-  if(!lang) return
-  return languagecode[lang];
+function getTargetLang(lang: string): string {
+  let language = ''
+  for(let key in languagecode){
+    if(key === lang){
+      language = languagecode[key]
+    }
+  }
+  return language
 }
-
-

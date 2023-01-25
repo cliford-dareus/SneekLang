@@ -1,6 +1,6 @@
 import axios from "axios";
 const baseUrl = "https://microsoft-translator-text.p.rapidapi.com";
-const speechUrl = "https://voicerss-text-to-speech.p.rapidapi.com/"
+const speechUrl = "https://voicerss-text-to-speech.p.rapidapi.com/";
 
 const options = {
   params: {
@@ -36,19 +36,25 @@ export const translateText = async (text: string, to: string) => {
     },
   ]);
   try {
-    const { data } = await axios.post(`${baseUrl}/translate?to=${to}`, body, options);
+    const { data } = await axios.post(
+      `${baseUrl}/translate?to=${to}`,
+      body,
+      options
+    );
     return data;
   } catch (error) {
     console.log(error);
   }
 };
 
-export const readText =async (text: string, lang:string) => {
-    try {
-        const { data } = await axios.get(`${speechUrl}?src=${text}&hl=${lang}`,options2);
-        return data
-    } catch (error) {
-        
-    }
-}
-
+export const readText = async (text: string, lang: string) => {
+  try {
+    const { data } = await axios.get(
+      `${speechUrl}?src=${text}&hl=${lang}`,
+      options2
+    );
+    return data;
+  } catch (error) {
+    console.log(error);
+  }
+};

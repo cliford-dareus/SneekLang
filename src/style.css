@@ -175,6 +175,7 @@ img{
   align-items: center;
   justify-content: space-between;
   padding: 0 .5em;
+  z-index: 2;
 }
 
 .lang__to{
@@ -255,7 +256,10 @@ img{
 .lang__input input{
   padding: .2em .5em;
   border: none;
-  /* font-size: 1.1rem; */
+  border-radius: .5em;
+  font-size: 1rem;
+  outline: none;
+  background-color: whitesmoke;
 }
 
 .form__title{
