@@ -58,3 +58,9 @@ export const readText = async (text: string, lang: string) => {
     console.log(error);
   }
 };
+
+export const getDefinitions =async () => {
+  
+};
+
+

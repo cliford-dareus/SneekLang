@@ -1,21 +1,22 @@
 import "./style.css";
 import globe from "/globe.png";
 import { readText, translateText } from "./api";
+import "remixicon/fonts/remixicon.css";
 
 document.querySelector<HTMLDivElement>("#app")!.innerHTML = `
   <div class="App">
     
     <header class="header">
         <a href="" class="logo">SNEEK<span class="accent">Lang</span></a>
-        <ul class="nav__menu">
-          <li class="">
-            <a href="" class="nav__links">Notes</a>
-          </li>
-          <li class="">
-            <a href="" class="nav__links">Saves</a>
-          </li>
-        </ul>
-        <div class="nav__toggle"></div>
+        <div class="nav__menu">
+          <h2>Dictionary</h2>
+        </div>
+        <div class="nav__shuffle flex">
+          <i class="ri-shuffle-line"></i>
+        </div>
+        <div class="nav__toggle flex">
+          <i class="ri-menu-5-line"></i>
+        </div>
     </header>
 
     <main class="">
@@ -25,7 +26,9 @@ document.querySelector<HTMLDivElement>("#app")!.innerHTML = `
             <select id="to" class="select__style">
               <option value="en" selected>English</option>
               <option value="fr">French</option>
+              <option value="ht">Creole</option>
               <option value="de">Germain</option>
+              <option value="es">Spanish</option>
             </select>
           </div>
 
@@ -41,13 +44,13 @@ document.querySelector<HTMLDivElement>("#app")!.innerHTML = `
         
         <div class="result" id="data"></div>
 
-        <section class="section entry__section">
+        <section class="section entry__section flex">
           <div class="input__container"><div class="blob"></div></div>
-          <div class="form__container">
+          <div class="form__container flex">
             <h3 class="form__title">Enter text to Translate</h3>
-            <form id="form" class="form">
+            <form id="form" class="form flex">
               <div class="flex lang__input">
-                <input name="text" id="text" type="text" placeholder="Text here"/>
+                <input name="text" id="text" type="text" value="" placeholder="Text here"/>
               </div>
               <button class="form__btn">Translate</button>
             </form>
@@ -69,19 +72,29 @@ const languagecode: { [index: string]: string } = {
   fr: "fr-fr",
   en: "en-us",
   de: "de-de",
+  es: "es-es"
 };
 
 const hero = document.querySelector<HTMLDivElement>(".hero__section");
 // const formBtn = document.querySelector<HTMLButtonElement>(".form__btn");
 const to = document.querySelector<HTMLSelectElement>("#to");
-const dataView = document.querySelector<HTMLDivElement>("#data");
 // const from = document.querySelector<HTMLSelectElement>("#from");
+const dataView = document.querySelector<HTMLDivElement>("#data");
+const menuBtn = document.querySelector<HTMLDivElement>(".nav__toggle");
+const randomBtn = document.querySelector<HTMLDivElement>(".nav__shuffle");
+const menu = document.querySelector<HTMLDivElement>(".nav__menu");
 const form = document.querySelector<HTMLFormElement>("#form");
 const text = document.querySelector("#text");
 
 to?.addEventListener("change", (ev: any) => (translateTo = ev.target!.value));
 form?.addEventListener("submit", submitTextTranslate);
 text?.addEventListener("keyup", getText);
+menuBtn?.addEventListener('click', toggleMobileMenu);
+
+function toggleMobileMenu(e:any){
+  e.preventDefault()
+  menu?.classList.toggle('open__nav__menu')
+};
 
 function getText(e: any) {
   textToTranslate = e.target.value;
@@ -92,6 +105,10 @@ async function submitTextTranslate(e: Event) {
   getData(textToTranslate, translateTo);
   form!.reset();
 };
+
+function randomWord (){
+  
+}
 
 async function getData(textToTranslate: string, to: string) {
   if (!textToTranslate) {
@@ -121,7 +138,9 @@ function reset(view: any) {
 function render(text: string, data: any) {
   dataView!.innerHTML = `
   <div class="result__container">
-      <button class="result__close-btn">X</button>
+      <button class="result__close-btn">
+        <i class="ri-close-fill"></i>
+      </button>
       ${text}
 
       <audio

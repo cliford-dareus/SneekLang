@@ -38,24 +38,24 @@ a {
 }
 
 .App {
-  width: 100%;
+  width: 100vw;
   height: 100vh;
   overflow: hidden;
   position: relative;
   background-color: var(--bg--clr--900);
-  transition: all 0.5s ease;
+  /* transition: all 0.5s ease; */
 }
 
 .blob {
   position: absolute;
   width: 65vw;
-  left: 0;
+  /* left: 0; */
   height: 75%;
   bottom: 15%;
   background: linear-gradient(180deg, var(--vr--clr--800) 31.77%, var(--vr--clr--300) 100%);
   mix-blend-mode: color-dodge;
-  -webkit-animation: move 20s infinite alternate;
-  animation: move 20s infinite alternate;
+  -webkit-animation: move 15s infinite alternate;
+  animation: move 15s infinite alternate;
   transition: 1s cubic-bezier(0.07, 0.8, 0.16, 1);
 }
 
@@ -98,10 +98,10 @@ img {
   height: 60px;
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  /* justify-content: space-between; */
   padding: 0 1em;
   position: relative;
-  overflow: hidden;
+  z-index: 3333;
   background: var(--bg--clr--800);
   border-bottom: 1px solid var(--br--clr--800);
   backdrop-filter: blur(18px);
@@ -133,8 +133,21 @@ img {
   background-color: var(--vr--clr--800);
 }
 
-.nav__links {
-  font-size: 1.5rem;
+.open__nav__menu{
+  transform: translateX(0);
+}
+
+.nav__toggle,
+.nav__shuffle{
+  color: var(--vr--clr--100);
+  font-size: 1.7em;
+  justify-content: center;
+  align-items: center;
+}
+
+.nav__shuffle{
+  margin-left: auto;
+  margin-right: 1em;
 }
 
 /* ============================HERO================================ */
@@ -182,10 +195,6 @@ img {
 }
 /* 
 ============================RESULT================================ */
-.result{
-  transition: all 1s ease;
-}
-
 .result__container {
   position: relative;
   width: 90%;
@@ -233,10 +242,14 @@ img {
   border-top-left-radius: 2em;
   border-top-right-radius: 2em;
   color: whitesmoke;
+  justify-content: center;
+  align-items: center;
+  padding: 1em;
 }
 
 .input__container {
   height: 100%;
+  width: 100%;
   position: absolute;
   border-top-left-radius: 2em;
   border-top-right-radius: 2em;
@@ -244,23 +257,30 @@ img {
 }
 
 .form__container {
-  position: absolute;
-  left: 1em;
-  right: 1em;
-  top: 40%;
-  transform: translateY(-50%);
+  width: 100%;
+  flex-direction: column;
+  /* align-items: center; */
+  justify-content: center;
 }
 
 .lang__input {
+  width: 100%;
   flex-direction: column;
   margin: 1em 0;
 }
 
 .lang__input input {
+  width: 100%;
   border: none;
   outline: none;
   padding: 0.3em 0.5em;
   border-radius: 0.5em;
+}
+
+.form{
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 }
 
 .form__title {
@@ -275,12 +295,8 @@ img {
   border-radius: 50%;
   border: none;
   outline: none;
-  position: absolute;
   background: linear-gradient(180deg, var(--vr--clr--800) 31.77%, var(--vr--clr--300) 100%);
   color: #eeeeff;
-  left: 50%;
-  transform: translateX(-50%);
   font-weight: bold;
-  z-index: 1;
 }
 /* ============================HEARDER================================ */
