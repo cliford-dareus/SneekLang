@@ -90,6 +90,7 @@ to?.addEventListener("change", (ev: any) => (translateTo = ev.target!.value));
 form?.addEventListener("submit", submitTextTranslate);
 text?.addEventListener("keyup", getText);
 menuBtn?.addEventListener('click', toggleMobileMenu);
+randomBtn?.addEventListener("click", randomWord);
 
 function toggleMobileMenu(e:any){
   e.preventDefault()
@@ -107,7 +108,7 @@ async function submitTextTranslate(e: Event) {
 };
 
 function randomWord (){
-  
+  console.log('hello')
 }
 
 async function getData(textToTranslate: string, to: string) {
