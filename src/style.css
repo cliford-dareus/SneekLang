@@ -131,6 +131,20 @@ img {
   flex-direction: column;
   padding: 1em;
   background-color: var(--vr--clr--800);
+  transition: all .5s ease;
+}
+
+.dictionary{
+  color: var(--vr--clr--100);
+  font-size: 1rem;
+}
+
+.dictionary__btn{
+  color: var(--vr--clr--100);
+  font-size: 1.5rem;
+  position: absolute;
+  top: .9em;
+  right: 1em;
 }
 
 .open__nav__menu{
@@ -214,8 +228,11 @@ img {
   position: absolute;
   top: 1em;
   right: 1em;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   border: none;
-  padding: 0.5em;
+  font-size: 1.3rem;
   border-radius: 50%;
   z-index: 2222;
 }

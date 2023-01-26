@@ -1,6 +1,8 @@
 import axios from "axios";
 const baseUrl = "https://microsoft-translator-text.p.rapidapi.com";
 const speechUrl = "https://voicerss-text-to-speech.p.rapidapi.com/";
+const randomWordUrl ="https://random-word-by-api-ninjas.p.rapidapi.com/v1/randomword";
+const dictionaryUrl ="https://dictionary-by-api-ninjas.p.rapidapi.com/v1/dictionary";
 
 const options = {
   params: {
@@ -26,6 +28,20 @@ const options2 = {
   headers: {
     "X-RapidAPI-Key": import.meta.env.VITE_RAPID_API_KEY,
     "X-RapidAPI-Host": "voicerss-text-to-speech.p.rapidapi.com",
+  },
+};
+
+const options3 = {
+  headers: {
+    "X-RapidAPI-Key": import.meta.env.VITE_RAPID_API_KEY,
+    "X-RapidAPI-Host": "random-word-by-api-ninjas.p.rapidapi.com",
+  },
+};
+
+const options4 = {
+  headers: {
+    "X-RapidAPI-Key": import.meta.env.VITE_RAPID_API_KEY,
+    "X-RapidAPI-Host": "dictionary-by-api-ninjas.p.rapidapi.com",
   },
 };
 
@@ -59,8 +75,20 @@ export const readText = async (text: string, lang: string) => {
   }
 };
 
-export const getDefinitions =async () => {
-  
+export const getDefinitions = async (word: string) => {
+  try {
+    const { data } = await axios.get(`${dictionaryUrl}?word=${word}`, options4);
+    return data;
+  } catch (error) {
+    console.log(error);
+  }
 };
 
-
+export const getRandomWord = async (type: string = "verb") => {
+  try {
+    const { data } = await axios.get(`${randomWordUrl}?type=${type}`, options3);
+    return data;
+  } catch (error) {
+    console.log(error);
+  }
+};

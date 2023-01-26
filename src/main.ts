@@ -1,6 +1,6 @@
 import "./style.css";
 import globe from "/globe.png";
-import { readText, translateText } from "./api";
+import { getDefinitions, getRandomWord, readText, translateText } from "./api";
 import "remixicon/fonts/remixicon.css";
 
 document.querySelector<HTMLDivElement>("#app")!.innerHTML = `
@@ -10,6 +10,10 @@ document.querySelector<HTMLDivElement>("#app")!.innerHTML = `
         <a href="" class="logo">SNEEK<span class="accent">Lang</span></a>
         <div class="nav__menu">
           <h2>Dictionary</h2>
+          <div class="dictionary"></div>
+          <div class="dictionary__btn">
+            <i class="ri-close-fill"></i>
+          </div>
         </div>
         <div class="nav__shuffle flex">
           <i class="ri-shuffle-line"></i>
@@ -50,7 +54,7 @@ document.querySelector<HTMLDivElement>("#app")!.innerHTML = `
             <h3 class="form__title">Enter text to Translate</h3>
             <form id="form" class="form flex">
               <div class="flex lang__input">
-                <input name="text" id="text" type="text" value="" placeholder="Text here"/>
+                <input name="text" id="text" type="text" autocomplete="true" placeholder="Text here"/>
               </div>
               <button class="form__btn">Translate</button>
             </form>
@@ -64,8 +68,8 @@ document.querySelector<HTMLDivElement>("#app")!.innerHTML = `
   </div>
 `;
 
-let translateTo = "";
 // let translateFrom = "";
+let translateTo = "";
 let textToTranslate = "";
 
 const languagecode: { [index: string]: string } = {
@@ -76,12 +80,13 @@ const languagecode: { [index: string]: string } = {
 };
 
 const hero = document.querySelector<HTMLDivElement>(".hero__section");
-// const formBtn = document.querySelector<HTMLButtonElement>(".form__btn");
-const to = document.querySelector<HTMLSelectElement>("#to");
+const dictionaryBtn = document.querySelector<HTMLButtonElement>(".dictionary__btn");
 // const from = document.querySelector<HTMLSelectElement>("#from");
+const to = document.querySelector<HTMLSelectElement>("#to");
 const dataView = document.querySelector<HTMLDivElement>("#data");
 const menuBtn = document.querySelector<HTMLDivElement>(".nav__toggle");
 const randomBtn = document.querySelector<HTMLDivElement>(".nav__shuffle");
+const dictionary = document.querySelector<HTMLDivElement>(".dictionary");
 const menu = document.querySelector<HTMLDivElement>(".nav__menu");
 const form = document.querySelector<HTMLFormElement>("#form");
 const text = document.querySelector("#text");
@@ -90,6 +95,7 @@ to?.addEventListener("change", (ev: any) => (translateTo = ev.target!.value));
 form?.addEventListener("submit", submitTextTranslate);
 text?.addEventListener("keyup", getText);
 menuBtn?.addEventListener('click', toggleMobileMenu);
+dictionaryBtn?.addEventListener("click", toggleMobileMenu);
 randomBtn?.addEventListener("click", randomWord);
 
 function toggleMobileMenu(e:any){
@@ -107,8 +113,14 @@ async function submitTextTranslate(e: Event) {
   form!.reset();
 };
 
-function randomWord (){
-  console.log('hello')
+async function randomWord (){
+  const random = await getRandomWord();
+  const definition = await getDefinitions(random.word);
+  const text = sliceText(definition.definition);
+  renderDitionary(definition);
+  const targetLanguage = getTargetLang('en');
+  const speechData = await readText(text, targetLanguage!);
+  render(definition.word, text, speechData);
 }
 
 async function getData(textToTranslate: string, to: string) {
@@ -121,14 +133,11 @@ async function getData(textToTranslate: string, to: string) {
   };
 
   const textData = await translateText(textToTranslate, to);
-  const text = textData[0]?.translations[0]?.text;
-  const lang = <string>textData[0]?.translations[0]?.to;
+  const text = textData[0]?.translations[0]?.text as string;
+  const lang = textData[0]?.translations[0]?.to as string;
   const targetLanguage = getTargetLang(lang);
   const speechData = await readText(text, targetLanguage!);
-  render(text, speechData);
-
-  const closeBtn = document.querySelector(".result__close-btn");
-  closeBtn?.addEventListener("click", () => reset(dataView));
+  render(textToTranslate, text, speechData);
 };
 
 function reset(view: any) {
@@ -136,22 +145,33 @@ function reset(view: any) {
   hero?.classList.remove("hero__squiz");
 };
 
-function render(text: string, data: any) {
+function render(original: string, text: string, data: any) {
   dataView!.innerHTML = `
   <div class="result__container">
       <button class="result__close-btn">
         <i class="ri-close-fill"></i>
       </button>
-      ${text}
-
-      <audio
-        class="audio__player"
-        // controls
-        src=${data}>
-    </audio>
+      <h4>${original}</h4>
+      ${text == undefined? 'No Definition Available....': text}
+      ${data?`<audio class="audio__player" controls src=${data}></audio>`:''}
   </div>`;
 
   hero?.classList.add("hero__squiz");
+  const closeBtn = document.querySelector(".result__close-btn");
+  closeBtn?.addEventListener("click", () => reset(dataView));
+};
+
+interface Definition{
+  definition: string;
+  word: string;
+}
+
+function renderDitionary(definition: Definition){
+  
+  dictionary!.innerHTML = `
+    <h4>${definition.word}</h4>
+    <p>${definition.definition}</p>
+  `;
 };
 
 function getTargetLang(lang: string): string {
@@ -163,3 +183,13 @@ function getTargetLang(lang: string): string {
   }
   return language;
 };
+
+
+function sliceText(text: string): string{
+  if(!text)return 'Sorry translation is not available for this word yet!';
+  const textArray = text.split('.');
+  if(textArray[0] == '1'){
+    return textArray[1]
+  }
+  return textArray[0]
+}
