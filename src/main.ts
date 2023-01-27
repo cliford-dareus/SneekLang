@@ -2,10 +2,10 @@ import "./style.css";
 import globe from "/globe.png";
 import { getDefinitions, getRandomWord, readText, translateText } from "./api";
 import "remixicon/fonts/remixicon.css";
+import { getRandomType, getTargetLang, reset, sliceText } from "./utils";
 
 document.querySelector<HTMLDivElement>("#app")!.innerHTML = `
   <div class="App">
-    
     <header class="header">
         <a href="" class="logo">SNEEK<span class="accent">Lang</span></a>
         <div class="nav__menu">
@@ -72,15 +72,9 @@ document.querySelector<HTMLDivElement>("#app")!.innerHTML = `
 let translateTo = "";
 let textToTranslate = "";
 
-const languagecode: { [index: string]: string } = {
-  fr: "fr-fr",
-  en: "en-us",
-  de: "de-de",
-  es: "es-es"
-};
-
 const hero = document.querySelector<HTMLDivElement>(".hero__section");
-const dictionaryBtn = document.querySelector<HTMLButtonElement>(".dictionary__btn");
+const dictionaryBtn =
+  document.querySelector<HTMLButtonElement>(".dictionary__btn");
 // const from = document.querySelector<HTMLSelectElement>("#from");
 const to = document.querySelector<HTMLSelectElement>("#to");
 const dataView = document.querySelector<HTMLDivElement>("#data");
@@ -94,13 +88,13 @@ const text = document.querySelector("#text");
 to?.addEventListener("change", (ev: any) => (translateTo = ev.target!.value));
 form?.addEventListener("submit", submitTextTranslate);
 text?.addEventListener("keyup", getText);
-menuBtn?.addEventListener('click', toggleMobileMenu);
+menuBtn?.addEventListener("click", toggleMobileMenu);
 dictionaryBtn?.addEventListener("click", toggleMobileMenu);
 randomBtn?.addEventListener("click", randomWord);
 
-function toggleMobileMenu(e:any){
-  e.preventDefault()
-  menu?.classList.toggle('open__nav__menu')
+function toggleMobileMenu(e: any) {
+  e.preventDefault();
+  menu?.classList.toggle("open__nav__menu");
 };
 
 function getText(e: any) {
@@ -113,15 +107,16 @@ async function submitTextTranslate(e: Event) {
   form!.reset();
 };
 
-async function randomWord (){
-  const random = await getRandomWord();
+async function randomWord() {
+  const type = getRandomType();
+  const random = await getRandomWord(type);
   const definition = await getDefinitions(random.word);
   const text = sliceText(definition.definition);
   renderDitionary(definition);
-  const targetLanguage = getTargetLang('en');
+  const targetLanguage = getTargetLang("en");
   const speechData = await readText(text, targetLanguage!);
   render(definition.word, text, speechData);
-}
+};
 
 async function getData(textToTranslate: string, to: string) {
   if (!textToTranslate) {
@@ -140,11 +135,6 @@ async function getData(textToTranslate: string, to: string) {
   render(textToTranslate, text, speechData);
 };
 
-function reset(view: any) {
-  view.innerHTML = "";
-  hero?.classList.remove("hero__squiz");
-};
-
 function render(original: string, text: string, data: any) {
   dataView!.innerHTML = `
   <div class="result__container">
@@ -152,44 +142,29 @@ function render(original: string, text: string, data: any) {
         <i class="ri-close-fill"></i>
       </button>
       <h4>${original}</h4>
-      ${text == undefined? 'No Definition Available....': text}
-      ${data?`<audio class="audio__player" controls src=${data}></audio>`:''}
+      ${
+        text == undefined
+          ? `<p class="text__result">Sorry! We have no definition for this word...</p>`
+          : `<p class="text__result">${text}</p>`
+      }
+      ${
+        data ? `<audio class="audio__player" controls src=${data}></audio>` : ""
+      }
   </div>`;
 
   hero?.classList.add("hero__squiz");
   const closeBtn = document.querySelector(".result__close-btn");
-  closeBtn?.addEventListener("click", () => reset(dataView));
+  closeBtn?.addEventListener("click", () => reset(dataView, hero!));
 };
 
-interface Definition{
+interface Definition {
   definition: string;
   word: string;
-}
+};
 
-function renderDitionary(definition: Definition){
-  
+function renderDitionary(definition: Definition) {
   dictionary!.innerHTML = `
     <h4>${definition.word}</h4>
     <p>${definition.definition}</p>
   `;
 };
-
-function getTargetLang(lang: string): string {
-  let language = "";
-  for (let key in languagecode) {
-    if (key === lang) {
-      language = languagecode[key];
-    }
-  }
-  return language;
-};
-
-
-function sliceText(text: string): string{
-  if(!text)return 'Sorry translation is not available for this word yet!';
-  const textArray = text.split('.');
-  if(textArray[0] == '1'){
-    return textArray[1]
-  }
-  return textArray[0]
-}

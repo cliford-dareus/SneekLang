@@ -132,11 +132,13 @@ img {
   padding: 1em;
   background-color: var(--vr--clr--800);
   transition: all .5s ease;
+  overflow: hidden;
 }
 
 .dictionary{
   color: var(--vr--clr--100);
   font-size: 1rem;
+  overflow: scroll;
 }
 
 .dictionary__btn{
@@ -226,15 +228,17 @@ img {
 
 .result__close-btn {
   position: absolute;
-  top: 1em;
-  right: 1em;
+  top: .5em;
+  right: .5em;
   display: flex;
   align-items: center;
   justify-content: center;
   border: none;
-  font-size: 1.3rem;
+  font-size: 1.5rem;
   border-radius: 50%;
   z-index: 2222;
+  color:  var(--vr--clr--800);
+  background-color: transparent;
 }
 
 .audio__player{
@@ -242,6 +246,14 @@ img {
   bottom: 4em;
   left: 50%;
   transform: translateX(-50%);
+}
+
+.text__result{
+  display: -webkit-box;
+  -webkit-line-clamp: 4;
+  -webkit-box-orient: vertical; 
+  width: 100%;
+  overflow: hidden;
 }
 
 /* 
